@@ -1,6 +1,13 @@
-import { ISong, IAlbum, INetTrack } from "../../types/index"
+import { ISong, IAlbum, INetTrack, INetAlbum } from "../../types/index"
+
+interface IAlbumsPerArtist {
+  artist: string,
+  albums: INetAlbum[]
+}
 
 export default class SongsRepository {
+
+  private albumsPerArtist: IAlbumsPerArtist[] = []
 
   public fetchRecentlyPlayed = (): Promise<ISong[]> => {
     return new Promise(resolve => {
@@ -45,27 +52,47 @@ export default class SongsRepository {
     })
   }
 
-}
+  public fetchAlbumsByArtist(name: string): Promise<INetAlbum[]> {
+    return new Promise((resolve, reject) => {
 
-  // resolve({
-  //   title: "Nightcall",
-  //   artwork: "https://i.scdn.co/image/c8981e841b25a63b0808a51d3cf9c41da8a3ace8",
-  //   artist: "Kavinsky",
-  //   songs: [
-  //     {
-  //       title: "Nightcall",
-  //       url: "https://i.scdn.co/image/c8981e841b25a63b0808a51d3cf9c41da8a3ace8",
-  //       artist: "Kavinsky"
-  //     },
-  //     {
-  //       title: "Pacific Coast Highway",
-  //       url: "https://i.scdn.co/image/c8981e841b25a63b0808a51d3cf9c41da8a3ace8",
-  //       artist: "Kavinsky"
-  //     },
-  //     {
-  //       title: "Service out",
-  //       url: "https://i.scdn.co/image/c8981e841b25a63b0808a51d3cf9c41da8a3ace8",
-  //       artist: "Kavinsky"
-  //     }
-  //   ]
-  // })
+      const inMemory = this.albumsPerArtist.find(x => x.artist === name)
+
+      if (inMemory) { resolve(inMemory.albums) }
+
+      fetch(`http://tannerv.ddns.net:3000/api/artist/${name}`)
+        .then(res => res.json())
+        .then((res: INetAlbum[]) => {
+
+          const albums = res.map(x => ({
+            ...x,
+            artwork: "http://tannerv.ddns.net:12345/SpotiFree/" + x.artwork
+          }))
+
+          this.albumsPerArtist.push({
+            artist: name,
+            albums
+          })
+
+          resolve(albums)
+        })
+        .catch(err => reject(err))
+    })
+  }
+
+  public fetchAlbums(): Promise<INetAlbum[]> {
+    return new Promise((resolve, reject) => {
+      fetch("http://tannerv.ddns.net:3000/api/albums")
+        .then(res => res.json())
+        .then((res: INetAlbum[]) => {
+
+          const albums = res.map(x => ({
+            ...x,
+            artwork: "http://tannerv.ddns.net:12345/SpotiFree/" + x.artwork
+          }))
+
+          resolve(albums)
+        })
+        .catch(err => reject(err))
+    })
+  }
+}

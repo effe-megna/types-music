@@ -3,7 +3,7 @@ import styled from "styled-components"
 
 interface IProps {
   label: string,
-  handleOnClick: () => void
+  handleOnClick?: () => void
 }
 
 const RowButton: React.FunctionComponent<IProps> = ({
@@ -36,7 +36,7 @@ const RowButton: React.FunctionComponent<IProps> = ({
   `
 
   return (
-    <Container>
+    <Container onClick={handleOnClick}>
       <Row>
         <Text>
           {label}

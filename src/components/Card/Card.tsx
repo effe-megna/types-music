@@ -1,5 +1,6 @@
 import * as React from "react"
 import styled from "styled-components"
+import * as theme from "styled-theming"
 
 interface IProps {
   title: string,
@@ -17,9 +18,9 @@ const Card: React.FunctionComponent<IProps> = ({
       <Image
         src={url}
       />
-      <Title>
+      <SongTitle>
         {title}
-      </Title>
+      </SongTitle>
       <Artist>
         {artist}
       </Artist>
@@ -42,11 +43,17 @@ const Image = styled.img`
   border-radius: 4px;
 `
 
-const Title = styled.label`
+const songTitleColor = theme("mode", {
+  light: "#222",
+  dark: "#fff"
+})
+
+const SongTitle = styled.label`
   padding-top: 8px;
   font-weight: normal;
   user-select: none;
   margin: 0px;
+  color: ${songTitleColor}
 `
 
 const Artist = styled.label`

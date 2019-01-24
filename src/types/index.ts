@@ -19,3 +19,13 @@ export interface INetTrack {
   url: string;
   artwork: string;
 }
+
+export interface INetAlbum {
+  album: string,
+  artist: string,
+  artwork: string
+}
+
+export interface INetArtist {
+  artist: string
+}

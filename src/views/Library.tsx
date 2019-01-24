@@ -1,64 +1,65 @@
 import * as React from 'react';
 import styled from "styled-components"
-import { inject, observer } from "mobx-react"
+import { inject, Observer } from "mobx-react"
 import { Link } from "react-router-dom"
 
 import Card from 'src/components/Card';
-import NavBar from 'src/components/NavBar/NavBar';
 import RowButton from 'src/components/RowButton';
 import LibraryStore from 'src/stores/domain/LibraryStore';
+import Title from 'src/components/Title';
 
 interface IProps {
   libraryStore: LibraryStore
 }
 
-const Library: React.FunctionComponent<IProps> = ({
+const Library = ({
   libraryStore
-}) => {
-
-  const click = () => alert("clicked")
+}: IProps) => {
 
   return (
     <Container>
-      <NavBar
-        title="Library"
-        canGoBack={false}
-      />
-      <RowButton
-        label="Artists"
-        handleOnClick={click}
-      />
-      <RowButton
-        label="Albums"
-        handleOnClick={click}
-      />
-      <RowButton
-        label="Playlist"
-        handleOnClick={click}
-      />
-      <RecentlyPlayed>
-        {libraryStore.recentlyPlayed.map((s, i) => (
-          <CardLink
-            to={`/album/${s.title}`}
-            key={s.title}
-          >
-            <Card
-              title={s.title}
-              artist={s.artist}
-              url={s.url}
-            />
-          </CardLink>
-        ))}
-      </RecentlyPlayed>
+      <Title>
+        Library
+      </Title>
+      <UnstyledLink to="/artists">
+        <RowButton
+          label="Artists"
+        />
+      </UnstyledLink>
+      <UnstyledLink to="/albums">
+        <RowButton
+          label="Albums"
+        />
+      </UnstyledLink>
+      <Observer>
+        {() => (
+          <RecentlyPlayed>
+            {libraryStore && libraryStore.recentlyPlayed.map((s, i) => (
+              <UnstyledLink
+                to={`/album/${s.title}`}
+                key={s.title}
+              >
+                <Card
+                  title={s.title}
+                  artist={s.artist}
+                  url={s.url}
+                />
+              </UnstyledLink>
+            ))}
+          </RecentlyPlayed>
+        )}
+      </Observer>
     </Container>
   );
 }
 
+
 const Container = styled.div`
- 
+  padding: 50px;
+  background: inherit;
 `
 
-const CardLink = styled(Link)`
+const UnstyledLink = styled(Link)`
   text-decoration: none;
   color: unset;
 `
@@ -69,4 +70,4 @@ const RecentlyPlayed = styled.div`
   margin-top: 16px;
 `
 
-export default inject("libraryStore")(observer(Library));
+export default inject("libraryStore")(Library)
